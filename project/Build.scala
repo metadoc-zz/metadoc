@@ -9,25 +9,29 @@ object ExampleBuild extends Build {
   import Dependencies._
   import Settings._
 
-  lazy val metadoc = Project(
-    id   = "metadoc",
-    base = file("compilerPlugin"),
-    settings = mergeDependencies ++ Seq(
-      scalaVersion := "2.11.5",
-      name := "metadoc-compiler-plugin",
-      repository in bintray := "maven",
-      bintrayOrganization in bintray := None,
-      libraryDependencies ++= Seq(
-        compiler(languageVersion),
-        scalameta,
-        scalahost
+  lazy val metadocCompilerPlugin = Project(
+    id   = "metadoc-compiler-plugin",
+    base = file("metadoc-compiler-plugin"),
+    settings = 
+      sharedSettings ++ 
+      mergeDependencies ++ 
+      bintraySettings ++ 
+      Seq(
+        scalaVersion := "2.11.5",
+        name := "metadoc-compiler-plugin",
+        repository in bintray := "maven",
+        bintrayOrganization in bintray := None,
+        libraryDependencies ++= Seq(
+          compiler(languageVersion),
+          scalameta,
+          scalahost
       )
-    ) ++ bintraySettings
+    )
   )
 
   lazy val metadocSbtPlugin = Project(
-    id = "sbtPlugin",
-    base = file("sbtPlugin"),
+    id = "metadoc-sbt-plugin",
+    base = file("metadoc-sbt-plugin"),
     settings = sharedSettings ++ Seq(
       sbtPlugin := true,
       name := "metadoc-sbt-plugin",
@@ -35,12 +39,11 @@ object ExampleBuild extends Build {
       bintrayOrganization in bintray := None,
       scalaVersion := "2.10.4",
       scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
-    ) ++ bintraySettings
-      ++ buildInfoSettings
+    ) ++ buildInfoSettings
       ++ Seq(
           sourceGenerators in Compile <+= buildInfo,
           buildInfoKeys := Seq[BuildInfoKey](version),
           buildInfoPackage := "com.scalakata.metadoc.build"
-      )
+      ) ++ bintraySettings
   )
 }

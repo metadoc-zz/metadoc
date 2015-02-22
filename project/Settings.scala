@@ -7,7 +7,7 @@ import bintray.Plugin._
 object Settings {
   lazy val languageVersion = "2.11.5"
 
-  lazy val sharedSettings: Seq[sbt.Def.Setting[_]] = Seq(
+  lazy val sharedSettings: Seq[sbt.Def.Setting[_]] = Defaults.defaultSettings ++ Seq(
     version := "0.1.0",
     organization := "com.scalakata.metadoc",
     description := "scaladoc reloaded",
@@ -15,8 +15,10 @@ object Settings {
     homepage := Some(url("http://scalakata.com")),
     licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.html")),
     crossVersion := CrossVersion.full,
-    resolvers += Resolver.sonatypeRepo("snapshots"),
-    resolvers += Resolver.sonatypeRepo("releases"),
+    resolvers ++=  Seq(
+      Resolver.sonatypeRepo("snapshots"),
+      Resolver.sonatypeRepo("releases")
+    ),
     scalacOptions ++= Seq("-feature", "-deprecation", "-unchecked"),
     parallelExecution in Test := false, // hello, reflection sync!!
     logBuffered := false,

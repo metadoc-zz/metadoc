@@ -15,6 +15,9 @@ object MetaDocPlugin extends Plugin {
 
   lazy val metadocSettings = Seq(
     libraryDependencies in ThisBuild += 
-      compilerPlugin("com.scalakata.metadoc" %% "metadoc-compiler-plugin" % version)
+      compilerPlugin("com.scalakata.metadoc" % "metadoc-compiler-plugin" % version cross CrossVersion.full),
+
+    resolvers in ThisBuild += 
+      "bintray-masseguillaume-maven" at "http://dl.bintray.com/content/masseguillaume/maven/"
   )
 }
