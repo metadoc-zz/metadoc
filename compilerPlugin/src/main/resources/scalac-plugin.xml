@@ -1,0 +1,4 @@
+<plugin>
+  <name>example</name>
+  <classname>org.scalameta.example.Plugin</classname>
+</plugin>
