@@ -52,14 +52,14 @@ lazy val metadocSettings = buildSettings ++ commonSettings ++ bintraySettings
 lazy val model = project
   .settings(metadocSettings: _*)
   .settings(bintrayMaven: _*)
-  .settings(moduleName := "metadoc-model")
+  .settings(name := "metadoc-model")
 
 lazy val compilerPlugin = project
   .settings(metadocSettings: _*)
-  .settings(moduleName := "metadoc-compiler-plugin")
   .settings(bintrayMaven: _*)
   .settings(Merge.settings: _*)
   .settings(seq(
+    name := "metadoc-compiler-plugin",
     parallelExecution in Test := false, // hello, reflection sync!!
     libraryDependencies ++= Seq(
       compiler(scalaVersion.value),
@@ -70,13 +70,14 @@ lazy val compilerPlugin = project
   .dependsOn(model)
 
 lazy val metaSbtPlugin = project
+  .settings(metadocSettings: _*)
   .settings(buildInfoSettings: _*)
   .settings(bintrayPlugin: _*)
   .settings(Seq(
-    moduleName := "metadoc-sbt-plugin",
+    name := "metadoc-sbt-plugin",
     sbtPlugin := true,
     sourceGenerators in Compile <+= buildInfo,
     buildInfoKeys := Seq[BuildInfoKey](version),
-    buildInfoPackage := "com.scalakata.metadoc.build",
+    buildInfoPackage := organization.value + ".build",
     scalaVersion := "2.10.4"
   ): _*)
