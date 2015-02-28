@@ -22,7 +22,7 @@ class Plugin(val global: Global) extends ScalahostPlugin with CompileTime {
 
     override def newPhase(prev: Phase): StdPhase = new StdPhase(prev) {
       var alreadyRun = false
-      override def apply(unit: CompilationUnit) {
+      override def apply(unit: CompilationUnit): Unit = {
         if (!alreadyRun) {
           example(global.currentRun.units.toList.map(_.body.metadata("scalameta").asInstanceOf[scala.meta.internal.ast.Source]))
           alreadyRun = true
