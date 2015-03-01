@@ -1,4 +1,4 @@
 <plugin>
-  <name>example</name>
-  <classname>org.scalameta.example.Plugin</classname>
+  <name>Metadoc</name>
+  <classname>com.scalakata.metadoc.plugin.MetadocPlugin</classname>
 </plugin>

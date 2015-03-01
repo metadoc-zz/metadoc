@@ -30,24 +30,26 @@ case class Developer(
 case class Dependency(
   groupId: String,
   artifactId: String,
-  description: String,
-  url: Url,
   version: Version
 )
 
 case class Project(
   groupId: String,
   artifactId: String,
-  description: String,
-  url: Url,
   version: Version,
+  description: Option[String],
+  url: Option[Url],
   licenses: Set[License],
-  name: String,
-  organization: Organization,
-  scm: SourceControlManagement,
+  // name: String, << ??
+  organization: Option[Organization],
+  scm: Option[SourceControlManagement],
   developers: List[Developer],
   dependencies: List[Dependency],
   packages: List[Package]
 )
 
-case class Package(name: String)
+trait Tree
+case class Trait(name: String) extends Tree
+case class Object(name: String) extends Tree
+case class Class(name: String) extends Tree
+case class Pkg(name: String, childs: List[Tree]) extends Tree
