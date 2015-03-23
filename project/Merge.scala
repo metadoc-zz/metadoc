@@ -2,7 +2,7 @@ import sbt._
 import Keys._
 import sbtassembly.Plugin._
 import AssemblyKeys._
-import bintray.Plugin._
+// import bintray.Plugin._
 
 object Merge {
   lazy val settings: Seq[sbt.Def.Setting[_]] = assemblySettings ++ Seq(

@@ -6,7 +6,7 @@ import scala.meta.internal.hosts.scalac.{PluginBase => ScalahostPlugin}
 import scala.tools.nsc.plugins.{Plugin => NscPlugin, PluginComponent => NscPluginComponent}
 import org.scalameta.reflection._
 
-class MetadocPlugin(val global: Global) extends ScalahostPlugin with CompileTime {
+class MetadocPlugin(val global: Global) extends ScalahostPlugin with Metadoc {
   val name = "Metadoc"
   val description = "Scaladoc reloaded"
   val components = List[NscPluginComponent](ConvertComponent, ExampleComponent)

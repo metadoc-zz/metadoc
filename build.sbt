@@ -28,8 +28,8 @@ lazy val buildSettings = Seq(
   homepage := Some(url("http://scalakata.com")),
   licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.html")),
   crossVersion := CrossVersion.full,
-  scalaVersion := "2.11.5",
-  crossScalaVersions := Seq("2.11.5")
+  scalaVersion := "2.11.6",
+  crossScalaVersions := Seq("2.11.6")
 )
 
 lazy val bintrayMaven = Seq(
@@ -46,13 +46,18 @@ val metaVersion = "0.1.0-SNAPSHOT"
 def compiler(sv: String) = "org.scala-lang" % "scala-compiler" % sv % "optional"
 lazy val scalameta = "org.scalameta" % "scalameta" % metaVersion % "optional" cross CrossVersion.binary
 lazy val scalahost = "org.scalameta" % "scalahost" % metaVersion % "optional" cross CrossVersion.full
+lazy val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.1"
+lazy val specs = "org.specs2" %% "specs2-core" % "3.1" % "test"
 
-lazy val metadocSettings = buildSettings ++ commonSettings ++ bintraySettings
+lazy val metadocSettings = buildSettings ++ commonSettings// ++ bintraySettings
 
 lazy val model = project
   .settings(metadocSettings: _*)
   .settings(bintrayMaven: _*)
-  .settings(name := "metadoc-model")
+  .settings(
+    name := "metadoc-model",
+    libraryDependencies ++= Seq(scalaz, specs)
+  )
 
 lazy val compilerPlugin = project
   .settings(metadocSettings: _*)
@@ -80,4 +85,23 @@ lazy val metaSbtPlugin = project
     buildInfoKeys := Seq[BuildInfoKey](version),
     buildInfoPackage := organization.value + ".build",
     scalaVersion := "2.10.4"
+  ): _*)
+
+lazy val bintrayScape = project
+  .settings(metadocSettings: _*)
+  .settings(Seq(
+    name := "bintray-scraper",
+    resolvers ++=  Seq(
+      "Sonatype" at "https://oss.sonatype.org/content/repositories/releases",
+      "spray repo" at "http://repo.spray.io"
+    )
+
+    libraryDependencies ++= Seq(
+      "io.spray" %% "spray-client" % "1.3.2-20140909",
+      "com.typesafe.akka" %% "akka-slf4j" % "2.3.6",
+      "ch.qos.logback" % "logback-classic" % "1.0.0" % "runtime",
+      "com.typesafe.akka" %% "akka-actor" % "2.3.6",
+      "com.typesafe.play" %% "play-json" % "2.4-2014-06-14-ea7daf3"
+    )
+
   ): _*)
