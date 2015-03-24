@@ -47,7 +47,7 @@ case class Project(
   // name: String, << ??
   organization: Option[Organization],
   scm: Option[SourceControlManagement],
-  developers: List[Developer],
-  dependencies: List[Dependency],
-  packages: List[Package]
+  developers: Set[Developer],
+  dependencies: Set[Dependency],
+  packages: Set[Package]
 )
