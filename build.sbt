@@ -49,7 +49,7 @@ lazy val scalahost = "org.scalameta" % "scalahost" % metaVersion % "optional" cr
 lazy val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.1"
 lazy val specs = "org.specs2" %% "specs2-core" % "3.1" % "test"
 
-lazy val metadocSettings = buildSettings ++ commonSettings// ++ bintraySettings
+lazy val metadocSettings = buildSettings ++ commonSettings ++ bintraySettings
 
 lazy val model = project
   .settings(metadocSettings: _*)
@@ -94,14 +94,12 @@ lazy val bintrayScape = project
     resolvers ++=  Seq(
       "Sonatype" at "https://oss.sonatype.org/content/repositories/releases",
       "spray repo" at "http://repo.spray.io"
-    )
-
+    ),
     libraryDependencies ++= Seq(
       "io.spray" %% "spray-client" % "1.3.2-20140909",
       "com.typesafe.akka" %% "akka-slf4j" % "2.3.6",
       "ch.qos.logback" % "logback-classic" % "1.0.0" % "runtime",
       "com.typesafe.akka" %% "akka-actor" % "2.3.6",
-      "com.typesafe.play" %% "play-json" % "2.4-2014-06-14-ea7daf3"
+      "com.typesafe.play" %% "play-json" % "2.4.0-M3"
     )
-
   ): _*)

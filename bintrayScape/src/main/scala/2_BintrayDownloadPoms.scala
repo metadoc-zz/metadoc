@@ -16,19 +16,14 @@ import spray.http.Uri._
 
 import com.typesafe.config.{ ConfigValueFactory, ConfigFactory, Config }
 
+import scala.language.postfixOps
+
 import play.api.libs.json._
 
-object _2_BintrayDownloadPoms extends App {
-  override def main(args: Array[String]): Unit = {
+object _2_BintrayDownloadPoms {
+  def main(args: Array[String]): Unit = {
     val scalaVersion = Scala.version
-    val config: Config = ConfigFactory.parseString("""
-     akka {
-       loggers = ["akka.event.slf4j.Slf4jLogger"]
-       loglevel = DEBUG
-     }
-     spray.can.host-connector.max-retries = 1
-    """)
-
+    val config = ConfigFactory.load()
     implicit val system = ActorSystem("scalakata-playground", config)
     import system.dispatcher // execution context for futures
 
@@ -55,7 +50,6 @@ object _2_BintrayDownloadPoms extends App {
     val bunch = 50
     val fgroups = reqs.sliding(bunch, bunch).map(v => Future.sequence(v))
 
-    val poms = new java.io.File("")
     val printer = new scala.xml.PrettyPrinter(80, 2)
 
     fgroups.foreach { g =>
@@ -78,5 +72,6 @@ object _2_BintrayDownloadPoms extends App {
           println(e)
       }
     }
+    system.shutdown
   }
 }

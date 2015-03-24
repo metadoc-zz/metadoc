@@ -1,7 +1,7 @@
 import java.io.File
 
-object _3_PomToModel extends App {
-  override def main(args: Array[String]): Unit = {
+object _3_PomToModel {
+  def main(args: Array[String]): Unit = {
     val scalaVersion = Scala.version
     def recursiveListFiles(f: File): Array[File] = {
       val these = f.listFiles
@@ -10,13 +10,14 @@ object _3_PomToModel extends App {
     val res =
     recursiveListFiles(new File(s"res/poms_${scalaVersion}")).map{ f =>
     	val date = f.getName.dropWhile(_ != '_').drop(1).dropWhile(_ != '_').drop(1).dropRight(".pom".length)
-
-      val xml =
-        scala.xml.XML.loadString(
-          scala.io.Source.fromFile(f).mkString
-        )
-
+      val xml = scala.xml.XML.loadString(scala.io.Source.fromFile(f).mkString)
       val p = xml \\ "project"
+    }
+  }
+}
+    // val path = s"web/web/data/scala_${scalaVersion}.json"
+    // val file = new java.io.File(path)
+    // if(!file.exists) file.getParentFile.mkdirs()
 
      	// val deps = (p \ "dependencies").map{ v =>
       //   val res = (v \\ "dependency").map{ one =>
@@ -62,9 +63,3 @@ object _3_PomToModel extends App {
       //   "licenses" -> toJson(licenses),
       //   "scm" -> scm
       // ))
-    }
-    // val path = s"web/web/data/scala_${scalaVersion}.json"
-    // val file = new java.io.File(path)
-    // if(!file.exists) file.getParentFile.mkdirs()
-  }
-}

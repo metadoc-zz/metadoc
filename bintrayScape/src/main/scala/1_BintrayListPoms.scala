@@ -15,20 +15,14 @@ import spray.http.Uri._
 
 import com.typesafe.config.{ ConfigValueFactory, ConfigFactory, Config }
 
+import scala.language.postfixOps
+
 import play.api.libs.json._
 
 // https://bintray.com/docs/api/
-object _1_BintrayListPoms extends App {
-  override def main(args: Array[String]): Unit = {
-
-    val config: Config = ConfigFactory.parseString("""
-      akka {
-        loggers = ["akka.event.slf4j.Slf4jLogger"]
-        loglevel = DEBUG
-      }
-      spray.can.host-connector.max-retries = 1
-    """)
-
+object _1_BintrayListPoms {
+  def main(args: Array[String]): Unit = {
+    val config = ConfigFactory.load()
     implicit val system = ActorSystem("scalakata-playground", config)
     import system.dispatcher // execution context for futures
 
@@ -95,7 +89,7 @@ object _1_BintrayListPoms extends App {
 
       if((remaining > 0 || start == 0) && end < total) get(scalaVersion, end)
     }
-    get(Scala.version, 0)
+    get(Scala.version,  14100)
     system.shutdown
   }
 }

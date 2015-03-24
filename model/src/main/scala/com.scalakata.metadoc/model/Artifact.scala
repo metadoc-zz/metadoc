@@ -1,13 +1,15 @@
 package com.scalakata.metadoc
 package model
-  
+
 import java.net.{URL => Url}
 
 trait License { def url: Url }
 case object MIT extends License { def url = new Url("http://opensource.org/licenses/MIT") }
 
+case class ScalaArtifactVersion(version: Version, scala: Version)
+
 trait Version
-case class SemVer(epic: Int, major: Int, minor: Int)
+case class SemVer(major: Int, minor: Int, patch: Int)
 
 object Version {
   def parse(in: String): Version = ???
@@ -30,13 +32,15 @@ case class Developer(
 case class Dependency(
   groupId: String,
   artifactId: String,
-  version: Version
+  version: Version,
+  scalaVersion: Version
 )
 
 case class Project(
   groupId: String,
   artifactId: String,
   version: Version,
+  scalaVersion: Version
   description: Option[String],
   url: Option[Url],
   licenses: Set[License],
@@ -47,9 +51,3 @@ case class Project(
   dependencies: List[Dependency],
   packages: List[Package]
 )
-
-trait Tree
-case class Trait(name: String) extends Tree
-case class Object(name: String) extends Tree
-case class Class(name: String) extends Tree
-case class Pkg(name: String, childs: Seq[Tree]) extends Tree
