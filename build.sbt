@@ -49,7 +49,7 @@ lazy val scalahost = "org.scalameta" % "scalahost" % metaVersion % "optional" cr
 lazy val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.1"
 lazy val specs = "org.specs2" %% "specs2-core" % "3.1" % "test"
 
-lazy val metadocSettings = buildSettings ++ commonSettings ++ bintraySettings
+lazy val metadocSettings = buildSettings ++ commonSettings ++ bintraySettings ++ kataSettings
 
 lazy val model = project
   .settings(metadocSettings: _*)
@@ -102,4 +102,4 @@ lazy val bintrayScape = project
       "com.typesafe.akka" %% "akka-actor" % "2.3.6",
       "com.typesafe.play" %% "play-json" % "2.4.0-M3"
     )
-  ): _*)
+  ): _*) dependsOn(model)

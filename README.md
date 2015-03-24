@@ -39,20 +39,16 @@ pom extraction
     <url>scp://iesl.cs.umass.edu/m/iesl/data2/www/iesl/maven/factorie</url>
   </site>
 </distributionManagement>
-// profiles 47 << _
 // ciManagement 61
 <ciManagement>
   <system>Travis CI</system>
   <url>https://travis-ci.org/applicius/play-dok</url>
 </ciManagement>
-// build 146 << _
-// parent 241 << _
 // issueManagement 287
 <issueManagement>
   <system>GitHub</system>
   <url>https://github.com/applicius/play-dok/issues</url>
 </issueManagement>
-// properties 326 << _
 // inceptionYear 1954
 <inceptionYear>
   2015
