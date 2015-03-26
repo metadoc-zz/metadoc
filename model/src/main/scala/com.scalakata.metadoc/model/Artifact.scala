@@ -8,12 +8,24 @@ case object MIT extends License { def url = new Url("http://opensource.org/licen
 
 case class ScalaArtifactVersion(version: Version, scala: Version)
 
-trait Version
-case class SemVer(major: Int, minor: Int, patch: Int)
-
 object Version {
-  def parse(in: String): Version = ???
+  def apply(v: String): Version = {
+    semverfi.Version(v) match {
+      case semverfi.NormalVersion(a, b, c) => Version(a, b, c)
+      case semverfi.PreReleaseVersion(a, b, c, d) => Version(a, b, c, Some(d.mkString("")))
+      case semverfi.BuildVersion(a, b, c, d, e) => Version(a, b, c, Some(d.mkString("")), Some(e.mkString("")))
+      case semverfi.Invalid(e) => sys.error(e)
+    }
+  }
 }
+// http://semver.org/
+case class Version(
+  major: Int,
+  minor: Int,
+  patch: Int,
+  preRelease: Option[String] = None,
+  metaData: Option[String] = None
+)
 
 case class Organization(
   name: String,
@@ -27,13 +39,20 @@ case class Git(url: Url) extends SourceControlManagement
 sealed trait Scope
 case object TestScope
 
-case class Dependency(
+sealed trait Dependency
+case class JvmDependency(
   groupId: String,
   artifactId: String,
   version: Version,
-  scalaVersion: Option[Version], // java: None
-  scope: Option[Scope]
-)
+  scope: Option[Scope] = None
+) extends Dependency
+case class ScalaDependencyVar(
+  groupId: String,
+  artifactId: String,
+  scalaVersion: Version,
+  version: Version
+) extends Dependency
+case class ScalaDependencyVal(p: Project) extends Dependency
 
 case class MailingList(
   name: String,
@@ -77,23 +96,21 @@ case class Project(
   groupId: String,
   artifactId: String,
   version: Version,
-  scalaVersion: Version,
-  description: Option[String],
-  url: Option[Url],
-  licenses: Set[License],
-  // name: String, << ??
-  mailingLists: Set[MailingList],
-  contributors: Set[Person],
-  distributionManagement: Set[Repository],
-  organization: Option[Organization],
-  ciManagement: Set[ContiniousIntegration],
-  issueManagement: Set[IssueTracker],
-  inceptionYear: Option[Year],
-  scm: Option[SourceControlManagement],
-  developers: Set[Person],
-  dependencies: Set[Dependency],
-  resolvers: Set[Repository], // repositories
-  packaging: Set[ArtifactPackaging],
-  sourceControlManagement: Option[SourceControlManagement],
-  packages: Set[Package]
+  description: Option[String] = None,
+  url: Option[Url] = None,
+  licenses: Set[License] = Set(),
+  mailingLists: Set[MailingList] = Set(),
+  contributors: Set[Person] = Set(),
+  distributionManagement: Set[Repository] = Set(),
+  organization: Option[Organization] = None,
+  ciManagement: Set[ContiniousIntegration] = Set(),
+  issueManagement: Set[IssueTracker] = Set(),
+  inceptionYear: Option[Year] = None,
+  scm: Option[SourceControlManagement] = None,
+  developers: Set[Person] = Set(),
+  dependencies: Set[Dependency] = Set(),
+  resolvers: Set[Repository] = Set(), // repositories
+  packaging: Set[ArtifactPackaging] = Set(),
+  sourceControlManagement: Option[SourceControlManagement] = None,
+  packages: Set[Package] = Set()
 )

@@ -56,7 +56,7 @@ lazy val model = project
   .settings(bintrayMaven: _*)
   .settings(
     name := "metadoc-model",
-    libraryDependencies ++= Seq(scalaz, specs)
+    libraryDependencies ++= Seq(scalaz, specs, "me.lessis" %% "semverfi" % "0.1.4")
   )
 
 lazy val compilerPlugin = project
