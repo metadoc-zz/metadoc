@@ -106,7 +106,6 @@ case class Project(
   ciManagement: Set[ContiniousIntegration] = Set(),
   issueManagement: Set[IssueTracker] = Set(),
   inceptionYear: Option[Year] = None,
-  scm: Option[SourceControlManagement] = None,
   developers: Set[Person] = Set(),
   dependencies: Set[Dependency] = Set(),
   resolvers: Set[Repository] = Set(), // repositories
