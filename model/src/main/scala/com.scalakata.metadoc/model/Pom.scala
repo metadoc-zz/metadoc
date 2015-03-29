@@ -1,4 +1,6 @@
-object Pom {
+package model
+
+object PomToProject {
   type Xml = scala.xml.Node
   def parse(px: Xml): Project = {
     import java.net.{URL => Url}
@@ -32,57 +34,93 @@ object Pom {
         px.child.find(_.label == "parent").get.child.find(_.label == "version").get
       ).text
 
-      def pUrl = {
-        o("url", url)
+
+    val pomArtifactId = r("artifactId") // scala-parser-combinators_2.11.0-M5
+
+    def pDependencies: Set[Dependency] = {
+      ss("dependencies", "dependency", x => {
+        JvmDependency(r2("groupId", x), r2("artifactId", x), Version(r2("version", x)))
+      })
+    }
+
+    val dependencies = pDependencies
+
+    // _2.11 binary
+    // _2.11.0-M5 full
+
+
+    val scalaVersion = 
+      dependencies.collect{
+        case JvmDependency(g, a, v, _) => (g, a, v)
+      }.find{ case (g, a, _)=>
+        g == "org.scala-lang" && a == "scala-library"
+      }.map(_._3)
+
+
+    val (artifactId, scalaVersionInArtifact) = {
+      val t = pomArtifactId.split("_")
+      (t.init.mkString(""), Version(t.last))
+    }
+
+    val ScalaCompatibility =
+      scalaVersion.flatMap { sv =>
+        if(sv.full(scalaVersionInArtifact)) Some(Full)
+        else if(sv.binary(scalaVersionInArtifact)) Some(Binary)
+        else None
       }
-      def pLicenses = {
-        ss("licenses", "license", x => {
-          License(r2("name", x), url(r2("url", x)), r2("type", x))
-        })
-      }
-      def pMailingLists = {
-        ss("mailingLists", "mailingList", x => {
-          License(r2("name", x), url(r2("url", x)), r2("type", x))
-        })
-      }
-      def pContributors = {
-        Set[Person]()
-      }
-      def pDistributionManagement = {
-        Set[Repository]()
-      }
-      def pOrganization = {
-        Some(Organization("bob", url("http://example.org")))
-      }
-      def pCiManagement = {
-        Set[ContiniousIntegration]()
-      }
-      def pIssueManagement = {
-        Set[IssueTracker]()
-      }
-      def pInceptionYear = {
-        Some(Year(2014))
-      }
-      def pDevelopers = {
-        Set[Person]()
-      }
-      def pDependencies = {
-        Set[Dependency]()
-      }
-      def pResolvers = {
-        Set[Repository]()
-      }
-      def pPackaging = {
-        Set[ArtifactPackaging]()
-      }
-      def pSourceControlManagement = {
-        Some(Github("bob", "bob"))
-      }
+
+    def pUrl = {
+      o("url", url)
+    }
+    def pLicenses = {
+      ss("licenses", "license", x => {
+        License(r2("name", x), url(r2("url", x)), r2("type", x))
+      })
+    }
+    def pMailingLists = {
+      // ss("mailingLists", "mailingList", x => {
+      //   License(r2("name", x), url(r2("url", x)), r2("type", x))
+      // })
+      Set[MailingList]()
+    }
+    def pContributors = {
+      Set[Person]()
+    }
+    def pDistributionManagement = {
+      Set[Repository]()
+    }
+    def pOrganization = {
+      Some(Organization("bob", url("http://example.org")))
+    }
+    def pCiManagement = {
+      Set[ContiniousIntegration]()
+    }
+    def pIssueManagement = {
+      Set[IssueTracker]()
+    }
+    def pInceptionYear = {
+      Some(Year(2014))
+    }
+    def pDevelopers = {
+      Set[Person]()
+    }
+    
+    def pResolvers = {
+      Set[Repository]()
+    }
+    def pPackaging = {
+      Set[ArtifactPackaging]()
+    }
+    def pSourceControlManagement = {
+      Some(Github("bob", "bob"))
+    }
 
     Project(
       r("groupId"),
-      r("artifactId"),
+      artifactId,//r("artifactId")
       Version(version),
+      scalaVersion,
+      Some(Full), // :ScalaCompatibility
       o("description"),
       pUrl,
       pLicenses,

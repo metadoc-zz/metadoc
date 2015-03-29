@@ -22,10 +22,11 @@ object _3_PomToModel {
       import scala.collection.JavaConverters._
       val source = Files.readAllLines(Paths.get(p.toURI)).asScala.mkString(System.lineSeparator)
       val xml = scala.xml.XML.loadString(source)
-      model.Project.parse((xml \\ "project").head)
-    }
+      // println((xml \\ "project").head)
+      model.PomToProject.parse((xml \\ "project").head)
+    }.filter(!_.dependencies.isEmpty).take(1)
 
-    println(res.toList.map(_.artifactId).mkString(System.lineSeparator))
+    println(res.toList)//.map(_.artifactId).mkString(System.lineSeparator))
 
   }
 }
