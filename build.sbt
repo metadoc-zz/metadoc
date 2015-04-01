@@ -42,6 +42,14 @@ lazy val bintrayPlugin = Seq(
     bintrayOrganization in bintray := None
 )
 
+lazy val loadSubmodules =
+  initialize := {
+    val run = initialize.value
+    "git submodule init" ! sLog.value
+    "git submodule update" ! sLog.value
+  }
+
+
 val metaVersion = "0.1.0-SNAPSHOT"
 def compiler(sv: String) = "org.scala-lang" % "scala-compiler" % sv % "optional"
 lazy val scalameta = "org.scalameta" % "scalameta" % metaVersion % "optional" cross CrossVersion.binary
@@ -88,6 +96,7 @@ lazy val metaSbtPlugin = project
   ): _*)
 
 lazy val bintrayScape = project
+  .settings(loadSubmodules)
   .settings(metadocSettings: _*)
   .settings(Seq(
     name := "bintray-scraper",

@@ -95,13 +95,14 @@ case class JvmDependency(
   version: Version,
   scope: Option[Scope] = None
 ) extends Dependency
-case class ScalaDependencyVar(
+
+case class ExternalScalaDependency(
   groupId: String,
   artifactId: String,
   scalaVersion: Version,
   version: Version
 ) extends Dependency
-case class ScalaDependencyVal(p: Project) extends Dependency
+case class ScalaDependency(p: Project) extends Dependency
 
 case class MailingList(
   name: String,
@@ -116,9 +117,11 @@ case class Person(
   url: Option[Url]
 )
 
-sealed trait Repository
-case class Release(id: String, name: String, url: Url)
-case class Snapshot(id: String, name: String, url: Url)
+case class Repository(id: String, name: String, url: Url)
+
+// sealed trait Repository
+// case class Release(id: String, name: String, url: Url)
+// case class Snapshot(id: String, name: String, url: Url)
 
 sealed trait ContiniousIntegration
 case class Travis(url: Url) extends ContiniousIntegration

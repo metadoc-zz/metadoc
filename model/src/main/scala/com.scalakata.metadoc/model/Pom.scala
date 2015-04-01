@@ -13,10 +13,22 @@ object PomToProject {
     def r(n: String): String = r2(n, px)
     
     def o[T](n: String, f: String => T = (a: String) => a): Option[T] = {
+      o2(n, f, px)
+    }
+    def o2[T](n: String, f: String => T = (a: String) => a, p: Xml): Option[T] = {
       val res = (px \ n).text
       if(res.isEmpty) None
       else Some(f(res))
     }
+
+    // def oo[T](n: String, v: String, f: Xml => T): Option[T] = {
+    //   val res = (px \\ n)
+    //   if(res.isEmpty) None
+    //   else {
+    //     f(res.head)
+    //   }
+    // }
+
     def ss[T](n: String, v: String, f: Xml => T): Set[T] = {
       val res = (px \\ n)
       if(res.isEmpty) Set()
@@ -70,7 +82,7 @@ object PomToProject {
       }
 
     def pUrl = {
-      o("url", url)
+      scala.util.Try(o("url", url)).getOrElse(None)
     }
     def pLicenses = {
       ss("licenses", "license", x => {
@@ -78,23 +90,45 @@ object PomToProject {
       })
     }
     def pMailingLists = {
-      // ss("mailingLists", "mailingList", x => {
-      //   License(r2("name", x), url(r2("url", x)), r2("type", x))
-      // })
-      Set[MailingList]()
+      ss("mailingLists", "mailingList", x => {
+        MailingList(
+          r2("name", x), 
+          url(r2("post", x)),
+          url(r2("subscribe", x)),
+          url(r2("unsubscribe", x))
+        )
+      })
     }
     def pContributors = {
-      Set[Person]()
+      ss("contributors", "contributor", x => {
+        Person(
+          r2("id", x),
+          r2("name", x),
+          // o2("url", url, x)
+          None
+        )
+      })
     }
     def pDistributionManagement = {
-      Set[Repository]()
+      ss("distributionManagement", "repository", x => {
+        Repository(
+          r2("id", x),
+          r2("name", x),
+          url(r2("urk", x))
+        )
+      })
+    }
+    def pCiManagement = {
+      <ciManagement>
+        <system>Travis CI</system>
+        <url>https://travis-ci.org/applicius/play-dok</url>
+      </ciManagement>
+      Set[ContiniousIntegration]()
     }
     def pOrganization = {
       Some(Organization("bob", url("http://example.org")))
     }
-    def pCiManagement = {
-      Set[ContiniousIntegration]()
-    }
+    
     def pIssueManagement = {
       Set[IssueTracker]()
     }
