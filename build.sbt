@@ -29,7 +29,9 @@ lazy val buildSettings = Seq(
   licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.html")),
   crossVersion := CrossVersion.full,
   scalaVersion := "2.11.6",
-  crossScalaVersions := Seq("2.11.6")
+  crossScalaVersions := Seq("2.11.6"),
+  resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases",
+  scalacOptions in Test ++= Seq("-Yrangepos")
 )
 
 lazy val bintrayMaven = Seq(
@@ -64,7 +66,11 @@ lazy val model = project
   .settings(bintrayMaven: _*)
   .settings(
     name := "metadoc-model",
-    libraryDependencies ++= Seq(scalaz, specs, "me.lessis" %% "semverfi" % "0.1.4")
+    libraryDependencies ++= Seq(
+      scalaz, 
+      specs, 
+      "me.lessis" %% "semverfi" % "0.1.5-SNAPSHOT"
+    )
   )
 
 lazy val compilerPlugin = project
@@ -112,3 +118,17 @@ lazy val bintrayScape = project
       "com.typesafe.play" %% "play-json" % "2.4.0-M3"
     )
   ): _*) dependsOn(model)
+
+def usePlugin(plugin: ProjectReference) = {
+  scalacOptions ++= {
+    val jar = (Keys.`package` in (plugin, Compile)).value
+    System.setProperty("sbt.paths.plugin.jar", jar.getAbsolutePath)
+    Seq("-Xplugin:" + jar.getAbsolutePath, "-Jdummy=" + jar.lastModified)
+  }
+}
+
+lazy val testBench = project
+  .settings(usePlugin(compilerPlugin))
+  .settings(
+    scalaVersion := "2.11.6"
+  )

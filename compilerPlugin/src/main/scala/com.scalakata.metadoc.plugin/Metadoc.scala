@@ -1,7 +1,8 @@
 package com.scalakata.metadoc
 package plugin
 
-import scala.meta.internal.ast._
+import scala.meta.internal._
+import ast._
 import scala.meta.internal.hosts.scalac._
 import scala.meta.Scalahost
 
@@ -9,52 +10,42 @@ import scala.meta.ui._
 
 import scalaz.syntax.show._
 
-
-
 trait Metadoc {
   val global: scala.tools.nsc.Global
   implicit val c = Scalahost.mkGlobalContext(global)
 
-  type PackageGroup = Map[Pkg, List[Stat]]
+  import scalaz._
+  import Scalaz._
 
-  // def loop(ss: Seq[Stat], visited: PackageGroup = Map()): PackageGroup = 
-  //   ss.foldLeft(Map.empty[Pkg, List[Stat]){
-  //     case (acc, v) => 
-  //       v match {
-  //         case p @ Pkg(_, stats) => {
-  //           visited ++ acc
-  //           loop(stats,  + p)
-  //         }
-  //         case e => visited
-  //       }
-  //   }
+
+  implicit object TermRefSemigroup extends Semigroup[Term.Ref] {
+    def append(a: Term.Ref, b: => Term.Ref) = {
+      (a, b) match {
+        case (Term.Select(a, b), Term.Name(c)) => Term.Select(Term.Select(a, b), Term.Name(c))
+      }
+    }
+  }
+
   def example(sources: List[Source]): Unit = {
-    // val nl = System.lineSeparator
-    // val res = sources.foldLeft(Set.empty[Pkg]){ 
-    //   case (acc, Source(stats)) => loop(stats) ++ acc
-    // }
-    // println(res)
-    // println(res.size)
+
+    def mergePackages(ss: Seq[Stat], acc: Map[Option[Term.Ref], Set[Stat]] = Map(),
+       pkg: Option[Term.Ref] = None): Map[Option[Term.Ref], Set[Stat]] = {
+      ss.foldLeft(acc){
+        case (acc2, ast.Source(ss)) => mergePackages(ss, acc2, pkg)
+        case (acc2, Pkg(ref, stats)) => mergePackages(stats, acc2, pkg |+| Some(ref))
+        case (acc2, e) => {
+          acc2.updated(pkg,
+            acc2.get(pkg).getOrElse(Set()) + e
+          )
+        }
+      }
+    }
+
+    println(mergePackages(sources))
+
+    ()
   }
 }
-
-// package com.example {
-//   package a.b {
-//     class A
-//     package c {
-//       class ABC1
-//       class ABC2  
-//     }
-//     package d {
-//       class ABD
-//       package e {
-//         class ABDE1
-//         class ABDE2
-//       }  
-//     }
-//   }
-// }
-
 
   // // Seq[model.Tree] = ss.flatMap{
     

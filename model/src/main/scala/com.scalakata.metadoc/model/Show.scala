@@ -15,13 +15,13 @@ trait ShowInstance {
           case Trait(name: String) => s"trait $name"
           case Object(name: String) => s"object $name"
           case Class(name: String) => s"class $name"
-          case Pkg(name: String, childs: Seq[Tree]) => {
-            List(
-              s"package $name {",
-              childs.map(loop(level + indent)).map(padding + _).mkString(nl),
-              "}"
-            ).map(padding + _).mkString(nl)
-          }
+          // case Pkg(name: String, childs: Seq[Tree]) => {
+          //   List(
+          //     s"package $name {",
+          //     childs.map(loop(level + indent)).map(padding + _).mkString(nl),
+          //     "}"
+          //   ).map(padding + _).mkString(nl)
+          // }
         }
       }
       loop(0)(a)

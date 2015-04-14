@@ -13,10 +13,15 @@ object Extract {
   }
 
   val res =
-    recursiveListFiles(new File(s"../poms")).filter(_.getName != ".git").map{ p =>
+    recursiveListFiles(new File("/home/masgui/FOOS/Doc/metadoc/poms/")).filter(_.getName != ".git").flatMap{ p =>
       import scala.collection.JavaConverters._
-      val source = Files.readAllLines(Paths.get(p.toURI)).asScala.mkString(System.lineSeparator)
-      val xml = scala.xml.XML.loadString(source)
-      model.PomToProject.parse((xml \\ "project").head)
+      val source = Files.readAllLines(Paths.get(p.toURI), Charset.defaultCharset()).asScala.mkString(System.lineSeparator)
+      
+      scala.util.Try(scala.xml.XML.loadString(source)).map{ xml =>
+        Array(model.PomToProject.parse((xml \\ "project").head))
+      }.getOrElse{
+        println(s"failed to load ${p.getName}")
+        Array.empty[model.Project]
+      }
     }
 }

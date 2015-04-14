@@ -16,18 +16,14 @@ object PomToProject {
       o2(n, f, px)
     }
     def o2[T](n: String, f: String => T = (a: String) => a, p: Xml): Option[T] = {
-      val res = (px \ n).text
-      if(res.isEmpty) None
-      else Some(f(res))
+      o3(n, xml => f(xml.text))
     }
 
-    // def oo[T](n: String, v: String, f: Xml => T): Option[T] = {
-    //   val res = (px \\ n)
-    //   if(res.isEmpty) None
-    //   else {
-    //     f(res.head)
-    //   }
-    // }
+    def o3[T](n: String, f: Seq[Xml] => T): Option[T] = {
+      val res = (px \ n)
+      if(res.isEmpty) None
+      else Some(f(res.toSeq))
+    }
 
     def ss[T](n: String, v: String, f: Xml => T): Set[T] = {
       val res = (px \\ n)
@@ -114,33 +110,57 @@ object PomToProject {
         Repository(
           r2("id", x),
           r2("name", x),
-          url(r2("urk", x))
+          url(r2("url", x)),
+          r2("layout", x)
         )
       })
     }
     def pCiManagement = {
-      <ciManagement>
-        <system>Travis CI</system>
-        <url>https://travis-ci.org/applicius/play-dok</url>
-      </ciManagement>
-      Set[ContiniousIntegration]()
+      o3("ciManagement", xml => {
+        val name = (xml \ "system").text
+        val ciUrl = url((xml \ "url").text)
+
+        if(ciUrl.getHost.contains("travis.com")) Travis(ciUrl)
+        else OtherCI(name, ciUrl)
+      })
     }
     def pOrganization = {
-      Some(Organization("bob", url("http://example.org")))
+      o3("organization", xml => 
+        Organization((xml \ "name").text, url("http://example.org"))
+      )
     }
     
     def pIssueManagement = {
-      Set[IssueTracker]()
+      o3("issueManagement", xml => {
+        val name = (xml \ "system").text
+        val iUrl = url((xml \ "url").text)
+
+        if(iUrl.getHost.contains("github.com")) GithubIssues(iUrl)
+        else OtherIssues(name, iUrl)
+      })
     }
     def pInceptionYear = {
-      Some(Year(2014))
+      o("inceptionYear").map(v => Year(v.toInt))
     }
     def pDevelopers = {
-      Set[Person]()
+      ss("developers", "developer", x => {
+        Person(
+          r2("id", x),
+          r2("name", x)
+          // o2("url", url, x)
+        )
+      })
     }
     
     def pResolvers = {
-      Set[Repository]()
+      ss("repositories", "repository", x => {
+        Repository(
+          r2("id", x),
+          r2("name", x),
+          url((x \ "url").text),
+          r2("layout", x)
+        )
+      })
     }
     def pPackaging = {
       Set[ArtifactPackaging]()

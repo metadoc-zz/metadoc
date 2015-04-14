@@ -114,10 +114,10 @@ case class MailingList(
 case class Person(
   id: String,
   name: String,
-  url: Option[Url]
+  url: Option[Url] = None
 )
 
-case class Repository(id: String, name: String, url: Url)
+case class Repository(id: String, name: String, url: Url, layout: String)
 
 // sealed trait Repository
 // case class Release(id: String, name: String, url: Url)
@@ -129,6 +129,7 @@ case class OtherCI(name: String, url: Url) extends ContiniousIntegration
 
 sealed trait IssueTracker
 case class GithubIssues(url: Url) extends IssueTracker
+case class OtherIssues(name: String, url: Url) extends IssueTracker
 
 case class Year(v: Int)
 
@@ -154,8 +155,8 @@ case class Project(
   contributors: Set[Person] = Set(),
   distributionManagement: Set[Repository] = Set(),
   organization: Option[Organization] = None,
-  ciManagement: Set[ContiniousIntegration] = Set(),
-  issueManagement: Set[IssueTracker] = Set(),
+  ciManagement: Option[ContiniousIntegration] = None,
+  issueManagement: Option[IssueTracker] = None,
   inceptionYear: Option[Year] = None,
   developers: Set[Person] = Set(),
   dependencies: Set[Dependency] = Set(),
