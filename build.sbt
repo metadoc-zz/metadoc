@@ -1,6 +1,9 @@
 import sbt._
 import sbt.Keys._
 import bintray.Keys._
+import scala.concurrent.duration._
+
+// import com.scalakata.ScalaKata._
 
 lazy val commonSettings = Seq(
   scalacOptions ++= Seq(
@@ -59,7 +62,9 @@ lazy val scalahost = "org.scalameta" % "scalahost" % metaVersion % "optional" cr
 lazy val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.1"
 lazy val specs = "org.specs2" %% "specs2-core" % "3.1" % "test"
 
-lazy val metadocSettings = buildSettings ++ commonSettings ++ bintraySettings ++ kataSettings
+lazy val metadocSettings = buildSettings ++ commonSettings ++ bintraySettings ++ kataSettings ++ Seq(
+  timeout in Backend := 120.seconds
+)
 
 lazy val model = project
   .settings(metadocSettings: _*)

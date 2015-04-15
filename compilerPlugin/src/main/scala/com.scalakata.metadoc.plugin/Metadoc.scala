@@ -21,7 +21,8 @@ trait Metadoc {
   implicit object TermRefSemigroup extends Semigroup[Term.Ref] {
     def append(a: Term.Ref, b: => Term.Ref) = {
       (a, b) match {
-        case (Term.Select(a, b), Term.Name(c)) => Term.Select(Term.Select(a, b), Term.Name(c))
+        case (ts @ Term.Select(_, _), tn @ Term.Name(_)) => Term.Select(ts, tn)
+        case (tn1 @ Term.Name(_), tn2 @ Term.Name(_)) => Term.Select(tn1, tn2)
       }
     }
   }
@@ -41,7 +42,17 @@ trait Metadoc {
       }
     }
 
-    println(mergePackages(sources))
+    mergePackages(sources).mapValues{
+      case Defn.Object(mods, Term.Name(name), ctor, templ) =>
+        model.Object(name)
+      case Defn.Trait(mods, Term.Name(name), tparams, ctor, templ) =>
+        model.Trait(name)
+      case Defn.Class(mods, Term.Name(name), tparams, ctor, templ) =>
+        model.Class(name)
+      case Import(clauses) => Seq()
+      case Pkg.Object(mods, Term.Name(name), ctor, templ) => Seq()
+      case huh => sys.error(huh.show[Raw])
+    }
 
     ()
   }
@@ -55,14 +66,7 @@ trait Metadoc {
   //   //   loop(stats)
   //   // }
 
-  //   // case Defn.Object(mods, Term.Name(name), ctor, templ) => Seq(model.Object(name))
-  //   // case Defn.Trait(mods, Term.Name(name), tparams, ctor, templ) => 
-  //   //  Seq(model.Trait(name))
-  //   // case Defn.Class(mods, Term.Name(name), tparams, ctor, templ) => 
-  //   //  Seq(model.Class(name))
-  //   // case Import(clauses) => Seq()
-  //   // case Pkg.Object(mods, Term.Name(name), ctor, templ) => Seq()
-  //   // case huh => sys.error(huh.show[Raw])
+  
   //   case Pkg(ts, stats) => {
   //     // println(e.show[Raw])
   //     // println((ts, ts.hashCode))
