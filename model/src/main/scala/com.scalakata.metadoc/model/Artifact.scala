@@ -67,7 +67,7 @@ case class SemanticVersion(
   override def toString = {
     val p = preRelease.map("-" + _).getOrElse("")
     val m = metaData.map("+" + _).getOrElse("")
-    s"$major-$minor-$patch$p$m"
+    s"$major.$minor.$patch$p$m"
   }
   def full(o: Version) = this == o
   def binary(o: Version) = o match {
