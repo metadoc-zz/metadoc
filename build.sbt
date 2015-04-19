@@ -15,7 +15,7 @@ lazy val commonSettings = Seq(
     "-language:implicitConversions",
     "-language:experimental.macros",
     "-unchecked",
-    "-Xfatal-warnings",
+    // "-Xfatal-warnings",
     "-Xlint",
     "-Yno-adapted-args",
     "-Ywarn-dead-code",
@@ -57,13 +57,15 @@ lazy val loadSubmodules =
 
 val metaVersion = "0.1.0-SNAPSHOT"
 def compiler(sv: String) = "org.scala-lang" % "scala-compiler" % sv % "optional"
-lazy val scalameta = "org.scalameta" % "scalameta" % metaVersion % "optional" cross CrossVersion.binary
-lazy val scalahost = "org.scalameta" % "scalahost" % metaVersion % "optional" cross CrossVersion.full
-lazy val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.1"
-lazy val specs = "org.specs2" %% "specs2-core" % "3.1" % "test"
+val scalameta = "org.scalameta" % "scalameta" % metaVersion % "optional" cross CrossVersion.binary
+val scalahost = "org.scalameta" % "scalahost" % metaVersion % "optional" cross CrossVersion.full
+val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.1"
+val specs = "org.specs2" %% "specs2-core" % "3.1" % "test"
+
+val pickle = "org.scala-lang.modules" %% "scala-pickling" % "0.10.0"
 
 lazy val metadocSettings = buildSettings ++ commonSettings ++ bintraySettings ++ kataSettings ++ Seq(
-  timeout in Backend := 120.seconds
+  timeout in Backend := 240.seconds
 )
 
 lazy val model = project
@@ -73,7 +75,8 @@ lazy val model = project
     name := "metadoc-model",
     libraryDependencies ++= Seq(
       scalaz, 
-      specs, 
+      specs,
+      pickle,
       "me.lessis" %% "semverfi" % "0.1.5-SNAPSHOT"
     )
   )
@@ -88,7 +91,8 @@ lazy val compilerPlugin = project
     libraryDependencies ++= Seq(
       compiler(scalaVersion.value),
       scalameta,
-      scalahost
+      scalahost,
+      pickle
     )
   ): _*)
   .dependsOn(model)

@@ -10,6 +10,9 @@ import scala.meta.ui._
 
 import scalaz.syntax.show._
 
+import scala.pickling.Defaults._
+import scala.pickling.binary._
+
 trait Metadoc {
   val global: scala.tools.nsc.Global
   implicit val c = Scalahost.mkGlobalContext(global)
@@ -42,41 +45,42 @@ trait Metadoc {
       }
     }
 
-    mergePackages(sources).mapValues{
-      case Defn.Object(mods, Term.Name(name), ctor, templ) =>
-        model.Object(name)
-      case Defn.Trait(mods, Term.Name(name), tparams, ctor, templ) =>
-        model.Trait(name)
-      case Defn.Class(mods, Term.Name(name), tparams, ctor, templ) =>
-        model.Class(name)
-      case Import(clauses) => Seq()
-      case Pkg.Object(mods, Term.Name(name), ctor, templ) => Seq()
-      case huh => sys.error(huh.show[Raw])
-    }
+    val out =
+      mergePackages(sources).map{ case(pkg, stats) => 
+        
+        val ms = stats.flatMap{
+          case Defn.Object(mods, Term.Name(name), ctor, templ) =>
+            Seq(model.Object(name))
+          case Defn.Trait(mods, Type.Name(name), tparams, ctor, templ) =>
+            Seq(model.Trait(name))
+          case c @ Defn.Class(mods, Type.Name(name), tparams, ctor, templ) =>
+            Seq(model.Class(name))
+          case Import(clauses) => Seq()
+          case Pkg.Object(mods, Term.Name(name), ctor, templ) => Seq()
+          case e => println(e.show[Raw]); Seq()
+        }
+
+        (pkg.map(_.show[Code]) | "", ms)
+      }
+
+      println(out)
+
+    // import java.nio.file.{Path, Paths, Files}
+
+    // val f = new File("metadoc.bin")
+    // val fw = new FileWriter(f)
+    // fw.write(out.pickle)
+    // // f.close()
+    // fw.close()
+
+    // Files.write(Paths.get("metadoc.bin"), out.pickle.value)
+
+    // out.pickle.value
+    // Map(1 -> 2).
+    // List(1).pickle.value
+
+    // println(out)
 
     ()
   }
 }
-
-  // // Seq[model.Tree] = ss.flatMap{
-    
-  //   // case Pkg(tn @ Term.Name(name), stats) => {
-  //   //   println((tn, tn.hashCode))
-  //   //   // Seq(model.Pkg(name, loop(stats)))
-  //   //   loop(stats)
-  //   // }
-
-  
-  //   case Pkg(ts, stats) => {
-  //     // println(e.show[Raw])
-  //     // println((ts, ts.hashCode))
-  //     loop(stats, ts + visited)
-  //   }
-  //   case e => {
-  //     visited
-  //   }
-
-  //   // Seq(
-  //   //   // model.Class(e.getClass.toString),
-  //   //   // model.Class(e.show[Raw])
-  //   // )
