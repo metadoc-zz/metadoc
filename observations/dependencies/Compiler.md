@@ -1,5 +1,6 @@
 ## Depends on the scala compiler
 
+```
 groupId                                   artifactId
 ====================================================================
 cucumber-scala
@@ -204,3 +205,4 @@ sh.jove.sbt                               io
 tv.cntt                                   xgettext
 tv.cntt                                   xitrum-xgettext
 tv.cntt                                   xitrum
+```
