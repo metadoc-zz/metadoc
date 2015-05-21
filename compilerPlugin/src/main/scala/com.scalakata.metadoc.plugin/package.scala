@@ -1,8 +1,7 @@
 package com.scalakata.metadoc
 
 import scala.meta.internal._
-import ast._
-
+import scala.meta.internal.ast._
 import scala.meta.ui._
 
 import scalaz.{Show, Semigroup}
@@ -38,13 +37,21 @@ package object plugin {
     override def shows(a: model.Pkg) = print(a.name.toString, a.childs.toList)
   }
 
-
   implicit object TermRefSemigroup extends Semigroup[Term.Ref] {
+    private def sequence(a: Term): List[Term.Name] = a match {
+      case Term.Select(qual, name) => sequence(qual) ::: List(name)
+      case name: Term.Name => List(name)
+      case e => sys.error(s"boom ${e.show[Raw]}")
+    }
+
+    private def buildUp(acc: List[Term.Name]): Term.Ref = acc match {
+      case List(a) => a
+      case List(a, b) => Term.Select(a, b)
+      case a :: b :: r => r.foldLeft(Term.Select(a, b))(Term.Select(_, _))
+    }
+
     def append(a: Term.Ref, b: => Term.Ref) = {
-      (a, b) match {
-        case (ts @ Term.Select(_, _), tn @ Term.Name(_)) => Term.Select(ts, tn)
-        case (tn1 @ Term.Name(_), tn2 @ Term.Name(_)) => Term.Select(tn1, tn2)
-      }
+      buildUp(sequence(a) ::: sequence(b))
     }
   }
 }
