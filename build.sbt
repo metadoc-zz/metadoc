@@ -92,7 +92,7 @@ lazy val compilerPlugin = project
       compiler(scalaVersion.value),
       scalameta,
       scalahost,
-      pickle
+      specs
     )
   ): _*)
   .dependsOn(model)

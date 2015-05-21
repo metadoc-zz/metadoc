@@ -7,4 +7,4 @@ case class Trait(name: String) extends Tree
 case class Object(name: String) extends Tree
 case class Class(name: String) extends Tree
 
-case class Pkg(name: String, childs: Seq[Tree])
+case class Pkg(val name: String, val childs: Set[Tree])
