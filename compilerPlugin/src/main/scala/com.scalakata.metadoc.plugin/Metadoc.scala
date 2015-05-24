@@ -38,10 +38,10 @@ trait Metadoc {
       mergePackages(sources).toList
       .map{ case(pkg, stats) => (pkg.map(_.show[Code]) | "", stats)}
       .sortBy{ case(pkg, _) => pkg}
-      .map{ case(pkg, stats) => 
+      .map{ case(pkg, stats) =>
+        println(stats.map(_.show[Raw]).mkString(System.lineSeparator))
         val ms = stats.toList.flatMap{
           case Defn.Object(mods, Term.Name(name), ctor, templ) => {
-            // println(templ.show[Code])
             List(model.Object(name))
           }
 
