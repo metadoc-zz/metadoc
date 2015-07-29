@@ -6,7 +6,7 @@ Scaladoc is my attempt at improving documentation of open source Scala projects.
 * Executable documentation via [ScalaKata](http://www.scalakata.com)
   * Tailored from official websites (such as [play doc](https://www.playframework.com/documentation/2.0/ScalaHome))
   * Extracted from StackOverflow Questions/Answers
-* Powerfull Search à la [Hoogle](http://haskell.org/hoogle/)
+* Powerful Search à la [Hoogle](http://haskell.org/hoogle/)
 
 # Current state
 
