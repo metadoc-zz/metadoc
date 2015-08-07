@@ -1,4 +1,5 @@
-import model._
+import com.scalakata._; @instrument class Playground {
+  import model._
 import com.github.nscala_time.time.Imports._
 
 def scalaV(v: Int)(p: Project): Boolean = {
@@ -10,6 +11,10 @@ def scalaV(v: Int)(p: Project): Boolean = {
 
 ("version,date,count" ::
 Extract.res.
+  groupBy(p => (p.artifactId, p.groupId)).
+  map{case (k, ps) =>
+      ps.minBy(_.released)
+  }.
   groupBy(p => (p.released.getYear, p.released.getMonthOfYear)).
   map{case (k, ps) =>
       val sample = ps.head.released
@@ -24,3 +29,8 @@ Extract.res.
     )
   }
 ).mkString(System.lineSeparator)
+
+
+
+// https://jsfiddle.net/uvk7mfvm/7/embedded/result/
+}
