@@ -36,7 +36,12 @@ object _2_BintrayDownloadPoms {
       content = scala.io.Source.fromFile(file).mkString
       JsArray(repos) = Json.parse(content)
       r <- repos if r != JsNull
-    } yield ((r \ "repo").as[String], (r \ "owner").as[String], (r \ "path").as[String], (r \ "created").as[String])
+    } yield (
+      (r \ "repo").as[String],
+      (r \ "owner").as[String],
+      (r \ "path").as[String].replace(" ", "%20"),
+      (r \ "created").as[String]
+    )
 
     val reqs = artifacts.map{ case info @ (repo, owner, path, _) =>
       val url =

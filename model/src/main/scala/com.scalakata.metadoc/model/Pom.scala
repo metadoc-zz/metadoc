@@ -1,8 +1,10 @@
 package model
 
+import org.joda.time.DateTime
+
 object PomToProject {
   type Xml = scala.xml.Node
-  def parse(px: Xml): Project = {
+  def parse(px: Xml, released: DateTime): Project = {
     import java.net.{URL => Url}
     def url(v: String) = {
       if(v.startsWith("http") || v.startsWith("https")) new Url(v)
@@ -173,6 +175,7 @@ object PomToProject {
       r("groupId"),
       artifactId,//r("artifactId")
       Version(version),
+      released,
       scalaVersion,
       Some(Full), // :ScalaCompatibility
       o("description"),

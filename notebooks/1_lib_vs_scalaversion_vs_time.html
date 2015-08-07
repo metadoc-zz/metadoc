@@ -1,0 +1,186 @@
+<style type="text/css">
+pre {
+  display: none;
+}
+
+svg {
+  font-family: "Helvetica Neue", Helvetica;
+}
+
+.line {
+  fill: none;
+  stroke: #000;
+  stroke-width: 2px;
+}
+
+.axis text {
+  font-family: sans-serif;
+  font-size: 11px;
+}
+</style>
+<pre>
+version,date,count
+2.10,Jan 2012,2
+2.11,Jan 2012,0
+2.10,Apr 2012,1
+2.11,Apr 2012,0
+2.10,May 2012,1
+2.11,May 2012,0
+2.10,Jun 2012,3
+2.11,Jun 2012,0
+2.10,Jul 2012,24
+2.11,Jul 2012,0
+2.10,Aug 2012,20
+2.11,Aug 2012,0
+2.10,Sep 2012,0
+2.11,Sep 2012,0
+2.10,Oct 2012,8
+2.11,Oct 2012,0
+2.10,Nov 2012,28
+2.11,Nov 2012,0
+2.10,Dec 2012,669
+2.11,Dec 2012,0
+2.10,Jan 2013,311
+2.11,Jan 2013,1
+2.10,Feb 2013,426
+2.11,Feb 2013,1
+2.10,Mar 2013,436
+2.11,Mar 2013,0
+2.10,Apr 2013,618
+2.11,Apr 2013,0
+2.10,May 2013,435
+2.11,May 2013,23
+2.10,Jun 2013,475
+2.11,Jun 2013,20
+2.10,Jul 2013,378
+2.11,Jul 2013,18
+2.10,Aug 2013,262
+2.11,Aug 2013,5
+2.10,Sep 2013,269
+2.11,Sep 2013,9
+2.10,Oct 2013,177
+2.11,Oct 2013,3
+2.10,Nov 2013,127
+2.11,Nov 2013,4
+2.10,Dec 2013,130
+2.11,Dec 2013,7
+2.10,Jan 2014,653
+2.11,Jan 2014,53
+2.10,Feb 2014,640
+2.11,Feb 2014,29
+2.10,Mar 2014,1856
+2.11,Mar 2014,146
+2.10,Apr 2014,855
+2.11,Apr 2014,172
+2.10,May 2014,863
+2.11,May 2014,267
+2.10,Jun 2014,1012
+2.11,Jun 2014,410
+2.10,Jul 2014,1594
+2.11,Jul 2014,892
+2.10,Aug 2014,377
+2.11,Aug 2014,322
+2.10,Sep 2014,2038
+2.11,Sep 2014,1554
+2.10,Oct 2014,916
+2.11,Oct 2014,744
+2.10,Nov 2014,1739
+2.11,Nov 2014,1453
+2.10,Dec 2014,1827
+2.11,Dec 2014,1804
+2.10,Jan 2015,2123
+2.11,Jan 2015,2180
+2.10,Feb 2015,1177
+2.11,Feb 2015,1374
+2.10,Mar 2015,1331
+2.11,Mar 2015,1966
+2.10,Apr 2015,4153
+2.11,Apr 2015,3315
+2.10,May 2015,1628
+2.11,May 2015,2232
+2.10,Jun 2015,1105
+2.11,Jun 2015,2423
+2.10,Jul 2015,834
+2.11,Jul 2015,1558
+2.10,Aug 2015,67
+2.11,Aug 2015,79
+<pre>
+
+<script>
+var format = d3.time.format("%b %Y");
+
+var margin = {top: 20, right: 30, bottom: 100, left: 60},
+    width = window.innerWidth - margin.left - margin.right,
+    height = window.innerHeight - margin.top - margin.bottom;
+
+var x = d3.time.scale()
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var z = d3.scale.category20c();
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom")
+    .ticks(d3.time.months);
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(10)
+
+var stack = d3.layout.stack()
+    .offset("zero")
+    .values(function(d) { return d.values; })
+    .x(function(d) { return d.date; })
+    .y(function(d) { return d.count; });
+
+var nest = d3.nest()
+    .key(function(d) { return d.version; });
+
+var area = d3.svg.area()
+    .interpolate("cardinal")
+    .x(function(d) { return x(d.date); })
+    .y0(function(d) { return y(d.y0); })
+    .y1(function(d) { return y(d.y0 + d.y); });
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+ 
+var data = d3.csv.parse(d3.select("pre").text().trim());
+data.forEach(function(d) {
+  d.date = format.parse(d.date);
+  d.count = +d.count;
+});
+
+var layers = stack(nest.entries(data));
+
+x.domain(d3.extent(data, function(d) { return d.date; }));
+y.domain([0, d3.max(data, function(d) { return d.y0 + d.y; })]);
+
+svg.selectAll(".layer")
+    .data(layers)
+  .enter().append("path")
+    .attr("class", "layer")
+    .attr("d", function(d) { return area(d.values); })
+    .style("fill", function(d, i) { return z(i); });
+
+svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis)
+  .selectAll("text")
+    .attr("y", 0)
+    .attr("x", 9)
+    .attr("dy", ".35em")
+    .attr("transform", "rotate(90)")
+    .style("text-anchor", "start");
+svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis);
+</script>

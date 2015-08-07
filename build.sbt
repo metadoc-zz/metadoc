@@ -3,8 +3,6 @@ import sbt.Keys._
 import bintray.Keys._
 import scala.concurrent.duration._
 
-// import com.scalakata.ScalaKata._
-
 lazy val commonSettings = Seq(
   scalacOptions ++= Seq(
     "-deprecation",
@@ -31,8 +29,7 @@ lazy val buildSettings = Seq(
   homepage := Some(url("http://scalakata.com")),
   licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.html")),
   crossVersion := CrossVersion.full,
-  scalaVersion := "2.11.6",
-  crossScalaVersions := Seq("2.11.6"),
+  scalaVersion := "2.11.7",
   resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases",
   scalacOptions in Test ++= Seq("-Yrangepos")
 )
@@ -64,9 +61,7 @@ val specs = "org.specs2" %% "specs2-core" % "3.1" % "test"
 
 val pickle = "org.scala-lang.modules" %% "scala-pickling" % "0.10.0"
 
-lazy val metadocSettings = buildSettings ++ commonSettings ++ bintraySettings ++ kataSettings ++ Seq(
-  timeout in Backend := 240.seconds
-)
+lazy val metadocSettings = buildSettings ++ commonSettings ++ bintraySettings
 
 lazy val model = project
   .settings(metadocSettings: _*)
@@ -77,9 +72,11 @@ lazy val model = project
       scalaz, 
       specs,
       pickle,
-      "me.lessis" %% "semverfi" % "0.1.5-SNAPSHOT"
-    )
-  )
+      "me.lessis" %% "semverfi" % "0.1.5-SNAPSHOT",
+      "com.github.nscala-time" %% "nscala-time" % "2.0.0"
+    ),
+    timeout in Backend := 240.seconds
+  ).enablePlugins(ScalaKataPlugin)
 
 lazy val compilerPlugin = project
   .settings(metadocSettings: _*)
@@ -107,7 +104,7 @@ lazy val metaSbtPlugin = project
     sourceGenerators in Compile <+= buildInfo,
     buildInfoKeys := Seq[BuildInfoKey](version),
     buildInfoPackage := organization.value + ".build",
-    scalaVersion := "2.10.4"
+    scalaVersion := "2.10.5"
   ): _*)
 
 lazy val bintrayScape = project
@@ -139,5 +136,5 @@ def usePlugin(plugin: ProjectReference) = {
 lazy val testBench = project
   .settings(usePlugin(compilerPlugin))
   .settings(
-    scalaVersion := "2.11.6"
+    scalaVersion := "2.11.7"
   )

@@ -40,7 +40,6 @@ object _1_BintrayListPoms {
       }.toMap
     }
 
-
     def get(scalaVersion: String, startpos: Int): Unit = {
       val file = new java.io.File(s"res/scala_${scalaVersion}/results_${scalaVersion}_${startpos}.json")
       if(!file.exists) file.getParentFile.mkdirs()
@@ -76,9 +75,6 @@ object _1_BintrayListPoms {
           println(e)
           None
       }
-      //Markdown(s"""|```json
-  		//				 |${Json.prettyPrint(Json.parse(json))}
-  		//				 |```""".stripMargin)
       pw.println(Json.prettyPrint(Json.parse(json)))
       pw.close()
 
@@ -89,7 +85,7 @@ object _1_BintrayListPoms {
 
       if((remaining > 0 || start == 0) && end < total) get(scalaVersion, end)
     }
-    get(Scala.version,  14100)
+    get(Scala.version,  0)
     system.shutdown
   }
 }

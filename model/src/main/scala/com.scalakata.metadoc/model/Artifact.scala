@@ -2,7 +2,7 @@
 package model
 
 import java.net.{URL => Url}
-
+import org.joda.time.DateTime
 
 case class License(name: String, url: Url, tpe: String)
 // trait License { def url: Url }
@@ -146,6 +146,7 @@ case class Project(
   groupId: String,
   artifactId: String,
   version: Version,
+  released: DateTime,
   scalaVersion: Option[Version],
   scalaCompatibility: Option[VersionCompatibility],
   description: Option[String] = None,
