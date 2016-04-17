@@ -32,7 +32,7 @@ object _1_BintrayListPoms {
 
     val bintray = {
       val home = System.getProperty("user.home")
-      val path = home + "/.bintray/.credentials"
+      val path = home + "/.bintray/.credentials2"
       val nl = System.lineSeparator
       io.Source.fromFile(path).mkString.split(nl).map{ v =>
         val (l, r) = v.span(_ != '=' )
@@ -85,7 +85,7 @@ object _1_BintrayListPoms {
 
       if((remaining > 0 || start == 0) && end < total) get(scalaVersion, end)
     }
-    get(Scala.version,  0)
+    get(Scala.version,  300)
     system.shutdown
   }
 }

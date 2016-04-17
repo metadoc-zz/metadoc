@@ -27,54 +27,54 @@ case class License(name: String, url: Url, tpe: String)
 // case object ISC                 extends License { def url = new Url("...")}
 // case object W3C                 extends License { def url = new Url("...")}
 
-case class ScalaArtifactVersion(version: Version, scala: Version)
+// case class ScalaArtifactVersion(version: Version, scala: Version)
 
-object Version {
-  def apply(v: String): Version = {
-    semverfi.Version(v) match {
-      case semverfi.NormalVersion(a, b, c) => SemanticVersion(a, b, c)
-      case semverfi.PreReleaseVersion(a, b, c, d) => SemanticVersion(a, b, c, Some(d.mkString("")))
-      case semverfi.BuildVersion(a, b, c, d, e) => SemanticVersion(a, b, c, Some(d.mkString("")), Some(e.mkString("")))
-      case _ :semverfi.Invalid => { RawVersion(v) }
-    }
-  }
-}
+// object Version {
+//   def apply(v: String): Version = {
+//     semverfi.Version(v) match {
+//       case semverfi.NormalVersion(a, b, c) => SemanticVersion(a, b, c)
+//       case semverfi.PreReleaseVersion(a, b, c, d) => SemanticVersion(a, b, c, Some(d.mkString("")))
+//       case semverfi.BuildVersion(a, b, c, d, e) => SemanticVersion(a, b, c, Some(d.mkString("")), Some(e.mkString("")))
+//       case _ :semverfi.Invalid => { RawVersion(v) }
+//     }
+//   }
+// }
 
-sealed trait VersionCompatibility
-case object Binary extends VersionCompatibility
-case object Full extends VersionCompatibility
+// sealed trait VersionCompatibility
+// case object Binary extends VersionCompatibility
+// case object Full extends VersionCompatibility
 
-// http://semver.org/
-trait Version {
-  def full(o: Version): Boolean
-  def binary(o: Version): Boolean
-}
-case class RawVersion(a: String) extends Version {
-  override def toString = a
-  def full(o: Version) = o match {
-    case s: SemanticVersion => false
-    case RawVersion(r) => r == a
-  }
-  def binary(o: Version) = full(o)
-}
-case class SemanticVersion(
-  major: Int,
-  minor: Int,
-  patch: Int,
-  preRelease: Option[String] = None,
-  metaData: Option[String] = None
-) extends Version {
-  override def toString = {
-    val p = preRelease.map("-" + _).getOrElse("")
-    val m = metaData.map("+" + _).getOrElse("")
-    s"$major.$minor.$patch$p$m"
-  }
-  def full(o: Version) = this == o
-  def binary(o: Version) = o match {
-    case SemanticVersion(ma, mi, _, _, _) => major == ma && minor == ma
-    case RawVersion(a) => false
-  }
-}
+// // http://semver.org/
+// trait Version {
+//   def full(o: Version): Boolean
+//   def binary(o: Version): Boolean
+// }
+// case class RawVersion(a: String) extends Version {
+//   override def toString = a
+//   def full(o: Version) = o match {
+//     case s: SemanticVersion => false
+//     case RawVersion(r) => r == a
+//   }
+//   def binary(o: Version) = full(o)
+// }
+// case class SemanticVersion(
+//   major: Int,
+//   minor: Int,
+//   patch: Int,
+//   preRelease: Option[String] = None,
+//   metaData: Option[String] = None
+// ) extends Version {
+//   override def toString = {
+//     val p = preRelease.map("-" + _).getOrElse("")
+//     val m = metaData.map("+" + _).getOrElse("")
+//     s"$major.$minor.$patch$p$m"
+//   }
+//   def full(o: Version) = this == o
+//   def binary(o: Version) = o match {
+//     case SemanticVersion(ma, mi, _, _, _) => major == ma && minor == ma
+//     case RawVersion(a) => false
+//   }
+// }
 
 case class Organization(
   name: String,
@@ -92,15 +92,15 @@ sealed trait Dependency
 case class JvmDependency(
   groupId: String,
   artifactId: String,
-  version: Version,
+  version: String,
   scope: Option[Scope] = None
 ) extends Dependency
 
 case class ExternalScalaDependency(
   groupId: String,
   artifactId: String,
-  scalaVersion: Version,
-  version: Version
+  scalaVersion: String,
+  version: String
 ) extends Dependency
 case class ScalaDependency(p: Project) extends Dependency
 
@@ -145,10 +145,10 @@ case object Jar extends ArtifactPackaging
 case class Project(
   groupId: String,
   artifactId: String,
-  version: Version,
+  version: String,
   released: DateTime,
-  scalaVersion: Option[Version],
-  scalaCompatibility: Option[VersionCompatibility],
+  scalaVersion: Option[String],
+  // scalaCompatibility: Option[VersionCompatibility],
   description: Option[String] = None,
   url: Option[Url] = None,
   licenses: Set[License] = Set(),
@@ -168,11 +168,11 @@ case class Project(
 ) {
   
 
-  def toSbtString = {
-    val compat =
-      if(scalaCompatibility == Full) " cross CrossVersion.full"
-      else ""
+  // def toSbtString = {
+  //   val compat =
+  //     if(scalaCompatibility == Full) " cross CrossVersion.full"
+  //     else ""
 
-    s"$groupId %% $artifactId % ${version.toString}$compat"
-  }
+  //   s"$groupId %% $artifactId % ${version.toString}$compat"
+  // }
 }

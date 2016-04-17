@@ -1,3 +1,3 @@
 object Scala {
-  val version = "2.9"
+  val version = "2.11"
 }

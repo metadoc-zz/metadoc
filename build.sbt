@@ -72,7 +72,6 @@ lazy val model = project
       scalaz, 
       specs,
       pickle,
-      "me.lessis" %% "semverfi" % "0.1.5-SNAPSHOT",
       "com.github.nscala-time" %% "nscala-time" % "2.0.0"
     ),
     timeout in Backend := 240.seconds
@@ -117,6 +116,7 @@ lazy val bintrayScape = project
       "spray repo" at "http://repo.spray.io"
     ),
     libraryDependencies ++= Seq(
+      "me.tongfei" % "progressbar" % "0.4.0",
       "io.spray" %% "spray-client" % "1.3.2-20140909",
       "com.typesafe.akka" %% "akka-slf4j" % "2.3.6",
       "ch.qos.logback" % "logback-classic" % "1.0.0" % "runtime",

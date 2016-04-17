@@ -49,7 +49,7 @@ object PomToProject {
 
     def pDependencies: Set[Dependency] = {
       ss("dependencies", "dependency", x => {
-        JvmDependency(r2("groupId", x), r2("artifactId", x), Version(r2("version", x)))
+        JvmDependency(r2("groupId", x), r2("artifactId", x), r2("version", x))
       })
     }
 
@@ -69,15 +69,15 @@ object PomToProject {
 
     val (artifactId, scalaVersionInArtifact) = {
       val t = pomArtifactId.split("_")
-      (t.init.mkString(""), Version(t.last))
+      (t.init.mkString(""), t.last)
     }
 
-    val ScalaCompatibility =
-      scalaVersion.flatMap { sv =>
-        if(sv.full(scalaVersionInArtifact)) Some(Full)
-        else if(sv.binary(scalaVersionInArtifact)) Some(Binary)
-        else None
-      }
+    // val ScalaCompatibility =
+    //   scalaVersion.flatMap { sv =>
+    //     if(sv.full(scalaVersionInArtifact)) Some(Full)
+    //     else if(sv.binary(scalaVersionInArtifact)) Some(Binary)
+    //     else None
+    //   }
 
     def pUrl = {
       scala.util.Try(o("url", url)).getOrElse(None)
@@ -174,10 +174,10 @@ object PomToProject {
     Project(
       r("groupId"),
       artifactId,//r("artifactId")
-      Version(version),
+      version,
       released,
       scalaVersion,
-      Some(Full), // :ScalaCompatibility
+      // Some(Full), // :ScalaCompatibility
       o("description"),
       pUrl,
       pLicenses,
